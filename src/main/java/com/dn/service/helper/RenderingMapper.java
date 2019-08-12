@@ -1,56 +1,36 @@
 package com.dn.service.helper;
 
+import com.dn.model.LogLine;
 import com.dn.model.Rendering;
 import com.dn.model.Rendering.RenderingBuilder;
-import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static java.lang.Integer.valueOf;
-
-@Component
 public class RenderingMapper {
 
-    public final String[] renderingInformation = {"startRendering", "getRendering", "uid:", "getPageCount", "Document:"};
+    private static final Pattern DOCUMENT_AND_PAGE_PATTERN = Pattern.compile("\\[(\\d+)\\,\\s(\\d+)\\]");
+    private static final Pattern UID_PATTERN = Pattern.compile("(\\d+\\-\\d+)");
 
-    public Rendering mapFrom(final String line) {
-        final RenderingBuilder renderingBuilder = Rendering.builder();
-        final String[] split = line.substring(24).trim().split("\\s+");
-        for (int i = 0; i < split.length; i++) {
-            if (i > 0) {
-                renderingBuilder.documentId(getDocumentOrPage(split[i - 1], split[i], 3));
-                renderingBuilder.page(getDocumentOrPage(split[i - 1], split[i], 4));
-            }
-            renderingBuilder.starts(addRenderingTimeStamp(line, split[i], 0));
-            renderingBuilder.getRenderings(addRenderingTimeStamp(line, split[i], 1));
-            renderingBuilder.UID(getUID(line, split[i]));
-        }
-        return renderingBuilder.build();
-    }
+    public Optional<Rendering> map(final LogLine startRenderingLogLine, final LogLine startRenderingReturnLogLine) {
 
-    private String getUID(final String line, final String word) {
-        if (line.contains(renderingInformation[2]) && word.matches("\\d{13}-\\d{4}")) {
-            return word;
+        final Matcher documentAndPageMatcher = DOCUMENT_AND_PAGE_PATTERN.matcher(startRenderingLogLine.getMessage());
+        if (!documentAndPageMatcher.find()) {
+            return Optional.empty();
         }
-        return null;
-    }
 
-    private Integer getDocumentOrPage(final String previousWord, final String actualWord, final Integer positionRendering) {
-        if (previousWord.equals(renderingInformation[positionRendering])) {
-            return valueOf(actualWord);
-        }
-        return null;
-    }
+        final RenderingBuilder renderingBuilder = Rendering.builder()
+                .documentId(documentAndPageMatcher.group(0))
+                .page(documentAndPageMatcher.group(1));
 
-    private List<LocalDateTime> addRenderingTimeStamp(final String line, final String word, final Integer position) {
-        final String timeStampLine = line.substring(0, 23);
-        if (line.contains(renderingInformation[position])) {
-            return Collections.singletonList(
-                    LocalDateTime.parse(timeStampLine, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss,SSS")));
+        final Matcher uIDMatcher = UID_PATTERN.matcher(startRenderingReturnLogLine.getMessage());
+        if (!uIDMatcher.find()) {
+            return Optional.empty();
         }
-        return Collections.emptyList();
+
+        return Optional.of(renderingBuilder
+                .UID(uIDMatcher.group(0))
+                .build());
     }
 }

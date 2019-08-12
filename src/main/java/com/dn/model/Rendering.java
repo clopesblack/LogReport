@@ -7,14 +7,14 @@ import org.springframework.data.annotation.Id;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 public class Rendering {
 
     @Id
-    private final Integer documentId;
-    private final Integer page;
+    private final String documentId;
+    private final String page;
     private final String UID;
-    private final List<LocalDateTime> starts;
-    private final List<LocalDateTime> getRenderings;
+    private final List<String> starts;
+    private final List<String> getRenderings;
 }
