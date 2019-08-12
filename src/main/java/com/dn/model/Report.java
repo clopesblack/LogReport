@@ -1,7 +1,10 @@
 package com.dn.model;
 
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
 public class Report {
 
     private final List<Rendering> rendering;
@@ -10,13 +13,5 @@ public class Report {
     public Report(final List<Rendering> rendering, final Summary summary) {
         this.rendering = rendering;
         this.summary = summary;
-    }
-
-    public List<Rendering> getRendering() {
-        return rendering;
-    }
-
-    public Summary getSummary() {
-        return summary;
     }
 }

@@ -8,9 +8,8 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.stream.Stream;
-
-import static java.lang.Boolean.TRUE;
 
 @Service
 public class LogService {
@@ -30,16 +29,14 @@ public class LogService {
     }
 
     private void process(final String line) {
-        if (isNotARenderingOrOtherImportantLine(line)) {
+        if (!isRenderingOrOtherImportantLine(line)) {
             return;
         }
-
         final Rendering rendering = renderingMapper.mapFrom(line);
         repository.save(rendering);
     }
 
-    private Boolean isNotARenderingOrOtherImportantLine(final String line) {
-        // TODO check if line is important or not
-        return TRUE;
+    private Boolean isRenderingOrOtherImportantLine(final String line) {
+        return Arrays.stream(renderingMapper.renderingInformation).anyMatch(line::contains);
     }
 }

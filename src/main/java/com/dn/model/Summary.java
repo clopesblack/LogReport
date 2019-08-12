@@ -1,5 +1,8 @@
 package com.dn.model;
 
+import lombok.Getter;
+
+@Getter
 public class Summary {
 
     private final Integer count;
@@ -10,17 +13,5 @@ public class Summary {
         this.count = count;
         this.duplicates = duplicates;
         this.unnecessary = unnecessary;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
-
-    public Integer getDuplicates() {
-        return duplicates;
-    }
-
-    public Integer getUnnecessary() {
-        return unnecessary;
     }
 }

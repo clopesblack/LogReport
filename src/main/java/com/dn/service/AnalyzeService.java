@@ -16,12 +16,10 @@ public class AnalyzeService {
     }
 
     public void process(final String fileName) {
-
         try {
             logService.saveRenderingsFrom(fileName);
         } catch (final IOException e) {
             e.printStackTrace();
         }
     }
-
 }

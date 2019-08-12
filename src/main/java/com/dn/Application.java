@@ -27,7 +27,6 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(final String... args) {
-
         // TODO use lombok log instead Sout
         System.out.println("Please enter the filename: ");
         final Scanner scanner = new Scanner(System.in);
@@ -39,7 +38,7 @@ public class Application implements CommandLineRunner {
         }
 
         System.out.println("Log analysed successfully. Resulted saved!");
-
+        //TODO change after the exit0
         exit(0);
     }
 }
