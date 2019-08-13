@@ -8,14 +8,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-import static com.dn.model.EventType.GET_RENDERING;
-import static com.dn.model.EventType.START_RENDERING;
+import static com.dn.model.EventType.*;
 
 @Component
 public class LogEventMapper {
 
     private static final String START_RENDERING_MESSAGE = "Executing request startRendering";
     private static final String START_RENDERING_RETURNED_MESSAGE = "Service startRendering returned";
+    private static final String GET_RENDERING_MESSAGE = "Executing request getRendering";
 
     private final LogLineFactory logLineFactory;
 
@@ -31,11 +31,15 @@ public class LogEventMapper {
         final LogEventBuilder logEventBuilder = LogEvent.builder()
                 .logLine(logLine);
 
-        if (logLine.getMessage().startsWith(START_RENDERING_MESSAGE)) {
+        if (logLine.getMessage().contains(START_RENDERING_MESSAGE)) {
             return Optional.of(logEventBuilder.type(START_RENDERING).build());
         }
 
-        if (logLine.getMessage().startsWith(START_RENDERING_RETURNED_MESSAGE)) {
+        if (logLine.getMessage().contains(START_RENDERING_RETURNED_MESSAGE)) {
+            return Optional.of(logEventBuilder.type(START_RENDERING_RETURNED).build());
+        }
+
+        if (logLine.getMessage().contains(GET_RENDERING_MESSAGE)) {
             return Optional.of(logEventBuilder.type(GET_RENDERING).build());
         }
 

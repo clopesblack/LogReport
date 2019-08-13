@@ -4,8 +4,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static java.lang.Boolean.TRUE;
-
 @Service
 public class AnalyzeService {
 

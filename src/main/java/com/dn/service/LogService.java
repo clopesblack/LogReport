@@ -5,6 +5,7 @@ import com.dn.model.LogLine;
 import com.dn.model.Rendering;
 import com.dn.repository.RenderingRepository;
 import com.dn.service.helper.LogEventMapper;
+import com.dn.service.helper.RegexRenderingHelper;
 import com.dn.service.helper.RenderingMapper;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.stream.Stream;
 
 import static com.dn.model.EventType.*;
+import static java.util.Collections.singletonList;
 
 @Service
 public class LogService {
@@ -24,11 +28,14 @@ public class LogService {
     private final LogEventMapper logEventMapper;
     private final RenderingMapper renderingMapper;
     private final Map<String, LogLine> threadStartRenderingMap;
+    private final RegexRenderingHelper regexRenderingHelper;
 
-    public LogService(final RenderingRepository repository, final LogEventMapper logEventMapper, final RenderingMapper renderingMapper) {
+    public LogService(final RenderingRepository repository, final LogEventMapper logEventMapper,
+                      final RenderingMapper renderingMapper, final RegexRenderingHelper regexRenderingHelper) {
         this.repository = repository;
         this.logEventMapper = logEventMapper;
         this.renderingMapper = renderingMapper;
+        this.regexRenderingHelper = regexRenderingHelper;
         this.threadStartRenderingMap = new HashMap<>();
     }
 
@@ -45,13 +52,17 @@ public class LogService {
     private void process(final LogEvent logEvent) {
         if (logEvent.getType() == START_RENDERING) {
             handleStartRendering(logEvent.getLogLine());
+            System.out.println("start rendering");
             return;
         }
         if (logEvent.getType() == START_RENDERING_RETURNED) {
             handleStartRenderingReturned(logEvent.getLogLine());
+            System.out.println("start rendering returned");
+            return;
         }
         if (logEvent.getType() == GET_RENDERING) {
             handleGetRendering(logEvent.getLogLine());
+            System.out.println("get rendering");
         }
     }
 
@@ -65,7 +76,21 @@ public class LogService {
     }
 
     private void handleGetRendering(final LogLine logLine) {
-        // TODO retrieve Rendering from database using logLine UID, populate the GetRendering event and save again
-        //repository.findById(logLine.getMessage())
+        Matcher matcherUID = regexRenderingHelper.getMatcherUID(logLine);
+        if (matcherUID != null) {
+            Rendering rendering;
+            String uid = matcherUID.group(1);
+            Optional<Rendering> optionalRendering = repository.findById(uid);
+            if (optionalRendering.isPresent()) {
+                rendering = optionalRendering.get();
+                rendering.getGetRenderings().add(logLine.getTimestamp());
+            } else {
+                rendering = Rendering.builder()
+                        .UID(uid)
+                        .getRenderings(singletonList(logLine.getTimestamp()))
+                        .build();
+            }
+            repository.save(rendering);
+        }
     }
 }

@@ -2,35 +2,34 @@ package com.dn.service.helper;
 
 import com.dn.model.LogLine;
 import com.dn.model.Rendering;
-import com.dn.model.Rendering.RenderingBuilder;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import static java.util.Collections.singletonList;
+
+@Component
 public class RenderingMapper {
 
-    private static final Pattern DOCUMENT_AND_PAGE_PATTERN = Pattern.compile("\\[(\\d+)\\,\\s(\\d+)\\]");
-    private static final Pattern UID_PATTERN = Pattern.compile("(\\d+\\-\\d+)");
+    private final RegexRenderingHelper helper;
+
+    public RenderingMapper(final RegexRenderingHelper helper) {
+        this.helper = helper;
+    }
 
     public Optional<Rendering> map(final LogLine startRenderingLogLine, final LogLine startRenderingReturnLogLine) {
+        final Matcher documentAndPageMatcher = helper.getMatcherDocumentAndPage(startRenderingLogLine);
+        if (documentAndPageMatcher == null) return Optional.empty();
 
-        final Matcher documentAndPageMatcher = DOCUMENT_AND_PAGE_PATTERN.matcher(startRenderingLogLine.getMessage());
-        if (!documentAndPageMatcher.find()) {
-            return Optional.empty();
-        }
+        final Matcher uIDMatcher = helper.getMatcherUID(startRenderingReturnLogLine);
+        if (uIDMatcher == null) return Optional.empty();
 
-        final RenderingBuilder renderingBuilder = Rendering.builder()
-                .documentId(documentAndPageMatcher.group(0))
-                .page(documentAndPageMatcher.group(1));
-
-        final Matcher uIDMatcher = UID_PATTERN.matcher(startRenderingReturnLogLine.getMessage());
-        if (!uIDMatcher.find()) {
-            return Optional.empty();
-        }
-
-        return Optional.of(renderingBuilder
-                .UID(uIDMatcher.group(0))
+        return Optional.of(Rendering.builder()
+                .documentId(documentAndPageMatcher.group(1))
+                .page(documentAndPageMatcher.group(2))
+                .UID(uIDMatcher.group(3))
+                .starts(singletonList(startRenderingLogLine.getTimestamp()))
                 .build());
     }
 }
