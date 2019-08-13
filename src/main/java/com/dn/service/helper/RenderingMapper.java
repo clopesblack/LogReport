@@ -28,7 +28,7 @@ public class RenderingMapper {
         return Optional.of(Rendering.builder()
                 .documentId(documentAndPageMatcher.group(1))
                 .page(documentAndPageMatcher.group(2))
-                .UID(uIDMatcher.group(3))
+                .UID(uIDMatcher.group(1))
                 .starts(singletonList(startRenderingLogLine.getTimestamp()))
                 .build());
     }
