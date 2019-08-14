@@ -12,18 +12,15 @@ import static java.util.Collections.singletonList;
 @Component
 public class RenderingMapper {
 
-    private final RegexRenderingHelper helper;
+    private final RenderingHelper helper;
 
-    public RenderingMapper(final RegexRenderingHelper helper) {
+    public RenderingMapper(final RenderingHelper helper) {
         this.helper = helper;
     }
 
     public Optional<Rendering> map(final LogLine startRenderingLogLine, final LogLine startRenderingReturnLogLine) {
         final Matcher documentAndPageMatcher = helper.getMatcherDocumentAndPage(startRenderingLogLine);
-        if (documentAndPageMatcher == null) return Optional.empty();
-
         final Matcher uIDMatcher = helper.getMatcherUID(startRenderingReturnLogLine);
-        if (uIDMatcher == null) return Optional.empty();
 
         return Optional.of(Rendering.builder()
                 .documentId(documentAndPageMatcher.group(1))
