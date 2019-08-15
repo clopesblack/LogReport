@@ -41,7 +41,6 @@ public class LogService {
     public void saveRenderingsFrom(final String fileName) throws IOException {
         try (final Stream<String> stream = Files.lines(Paths.get(fileName))) {
             stream.forEach(this::process);
-
         }
     }
 
@@ -69,24 +68,25 @@ public class LogService {
 
     private void handleStartRenderingReturned(final LogLine logLine) {
         String uid = renderingHelper.getMatcherUID(logLine).group(1);
-        Optional<Rendering> optionalRendering = repository.findById(uid);
-        if (optionalRendering.isPresent()) {
-            Rendering rendering = renderingHelper.updateStartRendering(logLine.getTimestamp(), optionalRendering.get());
-            repository.save(rendering);
+        Optional<Rendering> renderingById = repository.findById(uid);
+        Rendering rendering = null;
+        if (renderingById.isPresent()) {
+            rendering = renderingHelper.updateStartRendering(logLine.getTimestamp(), renderingById.get());
         } else {
-            renderingMapper.map(threadStartRenderingMap.get(logLine.getThread()), logLine)
-                    .ifPresent(entity -> {
-                        repository.save(entity);
-                        threadStartRenderingMap.remove(logLine.getThread());
-                    });
+            Optional<Rendering> optionalRendering = renderingMapper.map(threadStartRenderingMap.get(logLine.getThread()), logLine);
+            if (optionalRendering.isPresent()) {
+                rendering = optionalRendering.get();
+                threadStartRenderingMap.remove(logLine.getThread());
+            }
         }
+        repository.save(rendering);
     }
 
     private void handleGetRendering(final LogLine logLine) {
         String uid = renderingHelper.getMatcherUID(logLine).group(1);
         Optional<Rendering> optionalRendering = repository.findById(uid);
         Rendering rendering = optionalRendering.map(value -> renderingHelper.updateGetRendering(logLine.getTimestamp(), value))
-                .orElseGet(() -> Rendering.builder().UID(uid).getRenderings(singletonList(logLine.getTimestamp())).build());
+                .orElseGet(() -> Rendering.builder().UID(uid).commandGetRenderings(singletonList(logLine.getTimestamp())).build());
         repository.save(rendering);
     }
 }

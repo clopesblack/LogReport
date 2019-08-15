@@ -33,22 +33,23 @@ public class RenderingHelper {
         return uIDMatcher;
     }
 
-    public Rendering updateGetRendering(String timestampLine, Rendering renderingSaved) {
+    public Rendering updateGetRendering(final String timestampLine, final Rendering renderingSaved) {
         Rendering rendering = renderingSaved;
-        if (rendering.getGetRenderings() == null) {
-            rendering = rendering.toBuilder().getRenderings(singletonList(timestampLine)).build();
+        if (rendering.getCommandGetRenderings() == null) {
+            rendering = rendering.toBuilder().commandGetRenderings(singletonList(timestampLine)).build();
         } else {
-            rendering.getGetRenderings().add(timestampLine);
+            rendering.getCommandGetRenderings().add(timestampLine);
         }
         return rendering;
     }
 
-    public Rendering updateStartRendering(String timestampLine, Rendering startRendering) {
+    //TODO change this method
+    public Rendering updateStartRendering(final String timestampLine, final Rendering startRendering) {
         Rendering rendering = startRendering;
-        if (rendering.getStarts() == null) {
-            rendering = rendering.toBuilder().starts(singletonList(timestampLine)).build();
+        if (rendering.getCommandStarts() == null) {
+            rendering = rendering.toBuilder().commandStarts(singletonList(timestampLine)).build();
         } else {
-            rendering.getStarts().add(timestampLine);
+            rendering.getCommandStarts().add(timestampLine);
         }
         return rendering;
     }

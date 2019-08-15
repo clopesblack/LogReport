@@ -14,6 +14,6 @@ public class Rendering {
     private final String UID;
     private final String documentId;
     private final String page;
-    private final List<String> starts;
-    private final List<String> getRenderings;
+    private final List<String> commandStarts;
+    private final List<String> commandGetRenderings;
 }
