@@ -73,13 +73,18 @@ public class LogService {
         if (renderingById.isPresent()) {
             rendering = renderingHelper.updateStartRendering(logLine.getTimestamp(), renderingById.get());
         } else {
-            Optional<Rendering> optionalRendering = renderingMapper.map(threadStartRenderingMap.get(logLine.getThread()), logLine);
-            if (optionalRendering.isPresent()) {
-                rendering = optionalRendering.get();
-                threadStartRenderingMap.remove(logLine.getThread());
-            }
+            rendering = mountRenderingAndRemoveFromMap(logLine);
         }
         repository.save(rendering);
+    }
+
+    private Rendering mountRenderingAndRemoveFromMap(LogLine logLine) {
+        Optional<Rendering> optionalRendering = renderingMapper.map(threadStartRenderingMap.get(logLine.getThread()), logLine);
+        if (optionalRendering.isPresent()) {
+            threadStartRenderingMap.remove(logLine.getThread());
+            return optionalRendering.get();
+        }
+        return null;
     }
 
     private void handleGetRendering(final LogLine logLine) {

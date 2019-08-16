@@ -3,17 +3,10 @@ package com.dn.service;
 import com.dn.model.Rendering;
 import com.dn.model.Report;
 import com.dn.model.Summary;
-import com.dn.model.exception.ErrorTryingConvertXMLException;
-import com.dn.model.exception.ErrorTryingCreateFileException;
 import com.dn.repository.RenderingRepository;
+import com.dn.service.helper.XMLHelper;
 import org.springframework.stereotype.Service;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +15,15 @@ import java.util.List;
 public class ReportService {
 
     private final RenderingRepository repository;
+    private final XMLHelper xmlHelper;
 
-    public ReportService(final RenderingRepository repository) {
+    public ReportService(final RenderingRepository repository, final XMLHelper xmlHelper) {
         this.repository = repository;
+        this.xmlHelper = xmlHelper;
     }
 
     public void generateXMLReport(final Path path) {
-        reportToXML(mountReport(), path);
+        xmlHelper.createXMLReport(path, mountReport());
     }
 
     private Report mountReport() {
@@ -53,21 +48,6 @@ public class ReportService {
                 .count(renderings.size() + unnecessary)
                 .duplicates(duplicates)
                 .unnecessary(unnecessary).build();
-        return Report.builder().rendering(renderings).summary(summary).build();
-    }
-
-    private void reportToXML(final Report report, final Path path) {
-        try {
-            JAXBContext context = JAXBContext.newInstance(Report.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            BufferedWriter writer = new BufferedWriter(new FileWriter(path.getParent() + "report.xml"));
-            m.marshal(report, writer);
-            writer.close();
-        } catch (JAXBException e) {
-            throw new ErrorTryingConvertXMLException("Unable to transform this report into XML.", e);
-        } catch (IOException e) {
-            throw new ErrorTryingCreateFileException("Error trying to create the report file.", e);
-        }
+        return new Report(renderings, summary);
     }
 }

@@ -28,6 +28,7 @@ dependencies {
     compile group: 'de.flapdoodle.embed', name: 'de.flapdoodle.embed.mongo', version: '2.2.0'
     compile group: 'javax.xml.bind', name: 'jaxb-api', version: '2.4.0-b180830.0359'
     compile group: 'org.glassfish.jaxb', name: 'jaxb-runtime', version: '2.4.0-b180830.0438'
+    compile group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
 
     compileOnly 'org.projectlombok:lombok:1.18.8'
 

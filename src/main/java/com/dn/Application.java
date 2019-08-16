@@ -1,6 +1,8 @@
 package com.dn;
 
+import com.dn.model.exception.ErrorTryingAnalyzeLogFileException;
 import com.dn.service.AnalyzeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,6 +12,7 @@ import java.util.Scanner;
 import static java.lang.System.exit;
 import static org.springframework.boot.Banner.Mode.OFF;
 
+@Slf4j
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
@@ -27,18 +30,16 @@ public class Application implements CommandLineRunner {
 
     @Override
     public void run(final String... args) {
-        // TODO use lombok log instead Sout
-        System.out.println("Please enter the filename: ");
+        log.info("Please enter the filename: ");
         final Scanner scanner = new Scanner(System.in);
 
         try {
             analyzeService.process(scanner.nextLine());
         } catch (final RuntimeException ex) {
-            System.out.println("Error on try analyse the log file " + ex);
+            throw new ErrorTryingAnalyzeLogFileException("Error on try analyse the log file ", ex);
         }
 
-        System.out.println("Log analysed successfully. Resulted saved!");
-        //TODO change after the exit0
+        log.info("Log analysed successfully. Resulted saved!");
         exit(0);
     }
 }

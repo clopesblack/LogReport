@@ -1,6 +1,7 @@
 
 package com.dn.service;
 
+import com.dn.model.exception.ErrorTryingProcessLogFileException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -10,19 +11,19 @@ import java.nio.file.Paths;
 public class AnalyzeService {
 
     private final LogService logService;
-    private final XMLReportService xmlReportService;
+    private final ReportService reportService;
 
-    public AnalyzeService(final LogService logService, final XMLReportService xmlReportService) {
+    public AnalyzeService(final LogService logService, final ReportService reportService) {
         this.logService = logService;
-        this.xmlReportService = xmlReportService;
+        this.reportService = reportService;
     }
 
     public void process(final String fileName) {
         try {
             logService.saveRenderingsFrom(fileName);
-            xmlReportService.generateXMLReport(Paths.get(fileName));
+            reportService.generateXMLReport(Paths.get(fileName));
         } catch (final IOException e) {
-            e.printStackTrace();
+            throw new ErrorTryingProcessLogFileException("Error trying to process the log file.", e);
         }
     }
 }

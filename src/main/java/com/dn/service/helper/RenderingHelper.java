@@ -43,7 +43,6 @@ public class RenderingHelper {
         return rendering;
     }
 
-    //TODO change this method
     public Rendering updateStartRendering(final String timestampLine, final Rendering startRendering) {
         Rendering rendering = startRendering;
         if (rendering.getCommandStarts() == null) {
