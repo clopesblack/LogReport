@@ -32,13 +32,13 @@ public class Application implements CommandLineRunner {
     public void run(final String... args) {
         log.info("Please enter the filename: ");
         final Scanner scanner = new Scanner(System.in);
-
         try {
-            analyzeService.process(scanner.nextLine());
+            if (scanner.hasNext()) {
+                analyzeService.process(scanner.nextLine());
+            }
         } catch (final RuntimeException ex) {
             throw new ErrorTryingAnalyzeLogFileException("Error on try analyse the log file ", ex);
         }
-
         log.info("Log analysed successfully. Resulted saved!");
         exit(0);
     }

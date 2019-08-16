@@ -36,3 +36,7 @@ dependencies {
 
     testCompile("junit:junit")
 }
+
+bootRun {
+    standardInput = System.in
+}
