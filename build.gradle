@@ -35,6 +35,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.8'
 
     testCompile("junit:junit")
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '3.2.4'
 }
 
 bootRun {

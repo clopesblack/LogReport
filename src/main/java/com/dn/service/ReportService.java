@@ -28,8 +28,8 @@ public class ReportService {
 
     private Report mountReport() {
         List<Rendering> renderings = new ArrayList<>();
-        Integer unnecessary = 0;
-        Integer duplicates = 0;
+        int unnecessary = 0;
+        int duplicates = 0;
 
         for (Rendering rendering : repository.findAll()) {
             if (rendering.getCommandStarts() != null) {
@@ -43,11 +43,13 @@ public class ReportService {
             }
             renderings.add(rendering);
         }
+        return new Report(renderings, getSummary(renderings, unnecessary, duplicates));
+    }
 
-        Summary summary = Summary.builder()
+    private Summary getSummary(final List<Rendering> renderings, final int unnecessary, final int duplicates) {
+        return Summary.builder()
                 .count(renderings.size() + unnecessary)
                 .duplicates(duplicates)
                 .unnecessary(unnecessary).build();
-        return new Report(renderings, summary);
     }
 }

@@ -69,7 +69,7 @@ public class LogService {
     private void handleStartRenderingReturned(final LogLine logLine) {
         String uid = renderingHelper.getMatcherUID(logLine).group(1);
         Optional<Rendering> renderingById = repository.findById(uid);
-        Rendering rendering = null;
+        Rendering rendering;
         if (renderingById.isPresent()) {
             rendering = renderingHelper.updateStartRendering(logLine.getTimestamp(), renderingById.get());
         } else {
@@ -78,7 +78,7 @@ public class LogService {
         repository.save(rendering);
     }
 
-    private Rendering mountRenderingAndRemoveFromMap(LogLine logLine) {
+    private Rendering mountRenderingAndRemoveFromMap(final LogLine logLine) {
         Optional<Rendering> optionalRendering = renderingMapper.map(threadStartRenderingMap.get(logLine.getThread()), logLine);
         if (optionalRendering.isPresent()) {
             threadStartRenderingMap.remove(logLine.getThread());

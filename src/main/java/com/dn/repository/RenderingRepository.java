@@ -8,6 +8,4 @@ import java.util.List;
 
 @Repository
 public interface RenderingRepository extends MongoRepository<Rendering, String> {
-
-    List<Rendering> findTop100ByUID();
 }
