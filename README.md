@@ -8,15 +8,8 @@ A small tool for reading a log file and generating an XML report.
 * JAXB API
 * Lombok
 * Mongo
-* Embedded Mongo
-
-## Using Embedded Mongo And Tests
-
-* The idea was to use Mongo, using as a cache tool, to retrieve the top 100 documents, remove them and then do it again. Thus avoiding memory problems. 
-Mainly because of the Renderings list, which currently takes all documents and inputs it to the list.
-
-
-* Unfortunately, the tests were still missing. I know how important it is, but for lack of time, I couldn't do it.
+* JUnit
+* Mockito
 
 ## How to use the project
 
@@ -28,5 +21,5 @@ $ gradlew bootRun
 ```
 
 
-I hope you enjoy what has been done so far.
+I hope you enjoy it.
 It was fun to do it.
