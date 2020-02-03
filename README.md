@@ -4,7 +4,7 @@ A small tool for reading a log file and generating an XML report.
 
 ## What was used in this project:
 * Gradle
-* Spring Spring Boot
+* Spring Boot
 * JAXB API
 * Lombok
 * Mongo
